@@ -27,3 +27,5 @@ jobs:
 
       - name: Run bot
         run: python rss_bot.py
+        env:
+          WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
