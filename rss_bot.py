@@ -7,11 +7,11 @@ WEBHOOK_URL = os.environ['WEBHOOK_URL']
 # 블로그 닉네임과 RSS 주소 목록
 BLOGS = [
     ('예찬', 'https://yeachan.tistory.com/rss'),
-    ('영재', 'https://v2.velog.io/rss/yjl8628'),
+    ('영재', 'https://velog.io/rss/@yjl8628'),  # 최신 RSS 주소로 업데이트
     ('준호', 'https://se-juno.tistory.com/rss'),
+    ('진포', 'https://medium.com/feed/@Jinpyo-An')
 ]
 
-# 캐시 디렉토리 (최근 글 기록용)
 CACHE_DIR = 'cache'
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -26,13 +26,26 @@ for name, url in BLOGS:
 
     feed = feedparser.parse(url)
     if not feed.entries:
-        continue  # 피드가 비어있을 경우 skip
+        print(f"[{name}] RSS 피드가 비어있음.")
+        continue
 
     latest = feed.entries[0]
 
-    if latest.link != last_link:
-        message = f"📢 **[{name}] 블로그 새 글이 올라왔어요!**\n**{latest.title}**\n{latest.link}"
-        requests.post(WEBHOOK_URL, json={"content": message})
+    # Medium RSS는 link가 객체일 수 있음
+    if isinstance(latest.link, dict):
+        link = latest.link.get('href')
+    else:
+        link = latest.link
+
+    if link != last_link:
+        message = f"📢 **[{name}] 블로그 새 글이 올라왔어요!**\n**{latest.title}**\n{link}"
+        try:
+            requests.post(WEBHOOK_URL, json={"content": message})
+            print(f"[{name}] Webhook 전송 완료.")
+        except Exception as e:
+            print(f"[{name}] Webhook 전송 실패: {e}")
 
         with open(cache_file, 'w') as f:
-            f.write(latest.link)
+            f.write(link)
+    else:
+        print(f"[{name}] 새 글 없음.")
