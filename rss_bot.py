@@ -7,7 +7,7 @@ WEBHOOK_URL = os.environ['WEBHOOK_URL']
 # 블로그 닉네임과 RSS 주소 목록
 BLOGS = [
     ('예찬', 'https://yeachan.tistory.com/rss'),
-    ('영재', 'https://velog.io/rss/@yjl8628'),  # 최신 RSS 주소로 업데이트
+    ('영재', 'https://v2.velog.io/rss/@yjl8628'),
     ('준호', 'https://se-juno.tistory.com/rss'),
     ('진포', 'https://medium.com/feed/@Jinpyo-An')
 ]
