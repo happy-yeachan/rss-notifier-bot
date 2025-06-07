@@ -8,14 +8,16 @@ on:
 jobs:
   run-bot:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v3
 
-      - name: Cache RSS cache files
-        uses: actions/cache@v3
+      - name: Download RSS cache artifact
+        uses: actions/download-artifact@v4
         with:
+          name: rss-cache
           path: cache
-          key: rss-cache
+        continue-on-error: true  # 첫 실행 시 artifact가 없을 수 있음
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -29,3 +31,9 @@ jobs:
         run: python rss_bot.py
         env:
           WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+
+      - name: Upload RSS cache artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: rss-cache
+          path: cache
